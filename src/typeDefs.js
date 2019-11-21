@@ -14,6 +14,7 @@ export const typeDefs = gql`
 
   type Mutation {
     sendMessage(from: String!, message: String!): Chat
+    connect(from: String!): Chat
   }
 
   type Subscription {

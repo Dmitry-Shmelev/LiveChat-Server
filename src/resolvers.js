@@ -2,7 +2,9 @@ import { PubSub } from 'apollo-server';
 
 
 const pubsub = new PubSub();
+
 const CHAT_CHANNEL = 'CHAT_CHANNEL';
+
 const chats = [];
 
 export const resolvers = {
@@ -20,6 +22,14 @@ export const resolvers = {
       pubsub.publish(CHAT_CHANNEL, { messageSent: chat });
 
       return chat;
+    },
+    connect(parent, { from }) {
+      const chat = { id: chats.length + 1, from, message: `${from} connected` };
+
+      chats.push(chat);
+      pubsub.publish(CHAT_CHANNEL, { messageSent: chat });
+
+      return chat;
     }
   },
 
@@ -28,6 +38,6 @@ export const resolvers = {
       subscribe: (parent, args) => {
         return pubsub.asyncIterator([CHAT_CHANNEL]);
       }
-    }
+    },
   }
 }
