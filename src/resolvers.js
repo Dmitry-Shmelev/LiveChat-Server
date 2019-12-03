@@ -5,32 +5,24 @@ const pubsub = new PubSub();
 
 const CHAT_CHANNEL = 'CHAT_CHANNEL';
 
-const chats = [];
+// const chats = [];
 
 export const resolvers = {
   Query: {
-    chats(parent, args, context, info) {
-      return chats;
+    chats: (parent, args, context, info) => {
+      return context.prisma.chats();
     }
   },
 
   Mutation: {
-    sendMessage(parent, { from, message }) {
-      const chat = { id: chats.length + 1, from, message };
+    sendMessage: (parent, { from, message }, context) => {
+      const chat = context.prisma.createChat({
+        from, 
+        message,
+      });
 
-      chats.push(chat);
-      pubsub.publish(CHAT_CHANNEL, { messageSent: chat });
-
-      return chat;
+      return pubsub.publish(CHAT_CHANNEL, { messageSent: chat });
     },
-    connect(parent, { from }) {
-      const chat = { id: chats.length + 1, from, message: `${from} connected` };
-
-      chats.push(chat);
-      pubsub.publish(CHAT_CHANNEL, { messageSent: chat });
-
-      return chat;
-    }
   },
 
   Subscription: {

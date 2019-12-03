@@ -3,7 +3,7 @@ import { gql } from 'apollo-server';
 
 export const typeDefs = gql`
   type Chat {
-    id: Int!
+    id: ID!
     from: String!
     message: String!
   }
@@ -14,7 +14,6 @@ export const typeDefs = gql`
 
   type Mutation {
     sendMessage(from: String!, message: String!): Chat
-    connect(from: String!): Chat
   }
 
   type Subscription {
