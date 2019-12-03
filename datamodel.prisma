@@ -1,0 +1,10 @@
+type User {
+  id: ID! @id
+  name: String!
+}
+
+type Chat {
+  id: ID! @id
+  from: String!
+  message: String!
+}
