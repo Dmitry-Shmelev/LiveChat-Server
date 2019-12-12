@@ -33,9 +33,9 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: ({ req }) => {
+    const tokenWithBearer = req.headers.authorization;
     const token = tokenWithBearer.split(' ')[1];
     const user = getUserFromToken(token);
-    console.log('user: ', user);
 
     return {
       user, 

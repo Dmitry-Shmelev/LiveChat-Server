@@ -2,6 +2,8 @@ type User {
   id: ID! @id
   name: String! @unique
   password: String!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
 }
 
 
@@ -9,4 +11,6 @@ type Chat {
   id: ID! @id
   from: String!
   message: String!
+  createdAt: DateTime! @createdAt
+  updatedAt: DateTime! @updatedAt
 }
