@@ -5,19 +5,34 @@ import jwt from 'jsonwebtoken';
 import { typeDefs } from './typeDefs';
 import { resolvers } from './resolvers';
 
-import { prisma } from './generated/prisma-client';
+import {
+  ID_Output, 
+  String, 
+  Maybe, 
+  Prisma, 
+  prisma,
+} from './generated/prisma-client';
 
+export interface UserFromToken {
+  id: ID_Output;
+  name: String;
+}
 
-const result = dotenv.config();
+export interface Context {
+  user: Maybe<UserFromToken>;
+  prisma: Prisma;
+}
+
+const result = <dotenv.DotenvConfigOutput>dotenv.config();
 
 if (result.error) {
   throw result.error;
 }
 
-const getUserFromToken = token => {
+const getUserFromToken = (token: String):Maybe<UserFromToken> => {
   try {
     if (token) {
-      return jwt.verify(token, process.env.SECRET_KEY);
+      return <UserFromToken>jwt.verify(token, process.env.SECRET_KEY);
     }
     console.log('token is null');
     return null;
@@ -32,12 +47,12 @@ const PORT = process.env.PORT || 4000;
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req }) => {
-    const tokenWithBearer = req.headers.authorization;
-    const token = tokenWithBearer.split(' ')[1];
-    const user = getUserFromToken(token);
+  context: ({ req }):Context => {
+    const tokenWithBearer = <string>req.headers.authorization;
+    const token = <string>tokenWithBearer.split(' ')[1];
+    const user = <Maybe<UserFromToken>>getUserFromToken(token);
 
-    return {
+    return <Context>{
       user, 
       prisma,
     }

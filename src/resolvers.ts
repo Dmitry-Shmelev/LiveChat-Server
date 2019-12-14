@@ -2,6 +2,14 @@ import { PubSub } from 'apollo-server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
+import { 
+  Context, 
+  UserFromToken,
+} from './';
+import {
+  Prisma
+} from './generated/prisma-client';
+
 const pubsub = new PubSub();
 
 const CHAT_CHANNEL = 'CHAT_CHANNEL';
@@ -10,10 +18,10 @@ const CHAT_CHANNEL = 'CHAT_CHANNEL';
 
 export const resolvers = {
   Query: {
-    chats: (parent, args, context, info) => {
+    chats: (parent: any, args: any, context: Context, info: any) => {
       return context.prisma.chats();
     }, 
-    currentUser: (parent, args, { user, prisma }, info) => {
+    currentUser: (parent: any, args: any, { user, prisma }, info: any) => {
       if(!user) {
         throw new Error('Not Authenticated');
       }
@@ -22,7 +30,7 @@ export const resolvers = {
   },
 
   Mutation: {
-    register: async (parent, { name, password }, { prisma }) => {
+    register: async (parent: any, { name, password }, { prisma }) => {
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await prisma.createUser({
         name, 
@@ -77,7 +85,7 @@ export const resolvers = {
 
   Subscription: {
     messageSent: {
-      subscribe: (parent, args) => {
+      subscribe: () => {
         return pubsub.asyncIterator([CHAT_CHANNEL]);
       }
     },
